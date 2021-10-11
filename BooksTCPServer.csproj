@@ -5,4 +5,14 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="ExternalDLL\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BookLibrary">
+      <HintPath>ExternalDLL\BookLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
