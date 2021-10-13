@@ -34,7 +34,7 @@ namespace BooksTCPServer
                         break;
                     case "save":
                         Add_FromClient(ns, reader, writer);
-                        break;
+                            break;
                     case "delete":
                         Delete_FromClient(ns, reader, writer);
                         break;
@@ -108,19 +108,20 @@ namespace BooksTCPServer
             string newBookAsJson = reader.ReadLine();
             Console.WriteLine("Client added the following book to the library: " + newBookAsJson);
             Book addedBook = BooksManager.AddBook(newBookAsJson);
-            if (addedBook != null && addedBook.ISBN13 != "0")
+
+            if (addedBook != null && addedBook?.ISBN13 !=null && addedBook?.ISBN13 != "0")
             {
                 writer.WriteLine("Book successfully saved to the library. \n\r");
                 writer.Flush();
             }
-            else if (addedBook.ISBN13 == "0")
+            else if (addedBook?.ISBN13 == "0")
             {
-                writer.WriteLine("Error. Book was not added to the library due to a duplicate ISBN13. Please try again with a different ISBN13 \n\r");
+                writer.WriteLine("Error. ISBN13 already exists in the library. Please try again with a different ISBN13 \n\r");
                 writer.Flush();
             }
             else
             {
-                writer.WriteLine("Error. Book was not added to the library due to incorrect formatting of the received Json string. \n\r");
+                writer.WriteLine("Error. Book was not added to the library due to incorrect formatting of the Json string. \n\r");
                 writer.Flush();
             }
             Console.WriteLine();
@@ -155,21 +156,22 @@ namespace BooksTCPServer
             writer.WriteLine($"Please write the new book you wish to override ISBN13 \"{isbnToUpdate}\" with, as a JSON string.");
             writer.Flush();
             string updateBookAsJson = reader.ReadLine();
-            Console.WriteLine("Client has updated ISBN13: " + isbnToUpdate + "with the following book data: " + updateBookAsJson);
+            Console.WriteLine("Client has updated ISBN13: " + isbnToUpdate + " with the following book data: " + updateBookAsJson);
             Book updatedBook = BooksManager.UpdateBook(isbnToUpdate, updateBookAsJson);
-            if (updatedBook !=null && updatedBook.ISBN13 != "0")
+
+            if (updatedBook !=null && updatedBook?.ISBN13 != "0")
             {
                 writer.WriteLine("Update successful. \n\r");
                 writer.Flush();
             }
-            else if (updatedBook.ISBN13 == "0")
+            else if (updatedBook?.ISBN13 == "0")
             {
-                writer.WriteLine("Error. Could not update the requested book due to incorrect formatting of the received Json string. \n\r");
+                writer.WriteLine("Error. Could not update the requested book due to incorrect formatting of the Json string. \n\r");
                 writer.Flush();
             }
             else
             {
-                writer.WriteLine("Error. The typed ISBN13 does not match any book in the library. No books were updated. \n\r");
+                writer.WriteLine("Error. The received ISBN13 does not match any book in the library. No books were updated. \n\r");
                 writer.Flush();
             }
 

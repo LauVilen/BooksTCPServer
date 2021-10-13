@@ -18,8 +18,8 @@ namespace BooksTCPServer
         };
         private static Book falseBook = new Book("0", "no title", "no author", 0);
 
-        // {"isbN13":"9788772390130", "title":"Hannies Bog", "author":"Lisa Wingate", "numberOfPages": "457"}
-        // {"isbN13":"9788771553277", "title":"Den Lille Prins", "author":"Antoine de Saint-Exupéry","numberOfPages": "128"}
+        // {"ISBN13":"9788772390130","Title":"Hannies Bog", "Author":"Lisa Wingate", "NumberOfPages": 457}
+        // {"ISBN13":"9788771553277","Title":"Den Lille Prins", "Author":"Antoine de Saint-Exupéry", "NumberOfPages": 128}
 
         public static List<string> GetAllBooks()
         {
@@ -38,19 +38,30 @@ namespace BooksTCPServer
             return JsonSerializer.Serialize(book);
         }
 
-        //TODO: Find out why this is not working and FIX IT
+        //TODO: Find out why this is not working and FIX IT - why does "fromJsonBook.ISBN13 != null" break this shit???
         public static Book AddBook(string serializedBook)
         {
-            Book fromJsonBook = JsonSerializer.Deserialize<Book>(serializedBook);
-            if (fromJsonBook?.ISBN13 != null)
+            Book fromJsonBook = null;
+            try
             {
-                if (!_books.Exists(book => fromJsonBook.ISBN13 == book.ISBN13))
+                fromJsonBook = JsonSerializer.Deserialize<Book>(serializedBook);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            if (fromJsonBook != null && !string.IsNullOrEmpty(fromJsonBook?.ISBN13))
+            {
+                if (!_books.Exists(book => fromJsonBook?.ISBN13 == book.ISBN13))
                 {
                     _books.Add(fromJsonBook);
                     return fromJsonBook;
                 }
+
                 return falseBook;
             }
+
             return null;
         }
 
@@ -70,17 +81,27 @@ namespace BooksTCPServer
             Book bookToUpdate = _books.Find(book => book.ISBN13 == isbn);
             if (bookToUpdate != null)
             {
-                Book UpdatedBook = JsonSerializer.Deserialize<Book>(serializedBook);
-                if (UpdatedBook !=null)
+                Book updatedBook = null;
+                try
                 {
-                    bookToUpdate.ISBN13 = UpdatedBook.ISBN13;
-                    bookToUpdate.Title = UpdatedBook.Title;
-                    bookToUpdate.Author = UpdatedBook.Author;
-                    bookToUpdate.NumberOfPages = UpdatedBook.NumberOfPages;
-                    return UpdatedBook;
+                    updatedBook = JsonSerializer.Deserialize<Book>(serializedBook);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                if (updatedBook != null)
+                {
+                    bookToUpdate.ISBN13 = updatedBook.ISBN13;
+                    bookToUpdate.Title = updatedBook.Title;
+                    bookToUpdate.Author = updatedBook.Author;
+                    bookToUpdate.NumberOfPages = updatedBook.NumberOfPages;
+                    return updatedBook;
                 }
                 return falseBook;
             }
+
             return null;
         }
     }
